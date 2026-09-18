@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <title>Happy Sweet 18th 🎀</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+  
+  <style>
+    :root {
+      --pink-1: #fff0f5;
+      --pink-2: #ffd9e8;
+      --pink-3: #ffb6d1;
+      --pink-4: #ff8fb3;
+      --pink-5: #c2185b; /* Merah muda tegas ber-kontras tinggi */
+      --gold: #d97706;
+      --purple: #8b5cf6;
+      --ink: #3d2230; /* Teks utama pekat & sangat jelas */
+      --ink-muted: #6e485a; /* Teks sekunder yang tetap lulus standar kontras */
+      --card-bg: rgba(255, 255, 255, 0.85);
+      --card-border: rgba(255, 255, 255, 0.95);
+      --bg1: var(--pink-1);
+      --bg2: var(--pink-2);
+      --bg3: #fdeaf5;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --ink: #ffe3ee;
+        --ink-muted: #f3c2d8;
+        --card-bg: rgba(45, 20, 32, 0.75);
+        --card-border: rgba(255, 255, 255, 0.2);
+        --pink-5: #ff75a0;
+        --bg1: #2a1520;
+        --bg2: #3a1b2c;
+        --bg3: #331a2a;
+      }
+    }
+
+    :root[data-theme="dark"] {
+      --ink: #ffe3ee;
+      --ink-muted: #f3c2d8;
+      --card-bg: rgba(45, 20, 32, 0.75);
+      --card-border: rgba(255, 255, 255, 0.2);
+      --pink-5: #ff75a0;
+      --bg1: #2a1520;
+      --bg2: #3a1b2c;
+      --bg3: #331a2a;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      color: var(--ink);
+      background: #ffd6e4;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    .serif {
+      font-family: 'Playfair Display', serif;
+    }
+
+    .cursive {
+      font-family: 'Dancing Script', cursive;
+    }
+
+    canvas#sparkles {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .wrap {
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 0 18px 60px;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Overlay Pembuka */
+    #overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at 50% 20%, #4a1f38, #1c0e17 75%);
+      padding: 20px;
+      transition: opacity 0.8s ease;
+    }
+
+    .envelope {
+      width: 220px;
+      height: 150px;
+      margin: 22px auto 0;
+      background: linear-gradient(135deg, #ffd6e8, #ffb6d1);
+      border-radius: 16px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 10px 40px rgba(255, 140, 180, 0.4);
+      transition: transform 0.3s;
+    }
+
+    .envelope:active {
+      transform: scale(0.96);
+    }
+
+    .envelope .ribbon-h {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 50%;
+      height: 26px;
+      transform: translateY(-50%);
+      background: linear-gradient(90deg, #f4b183, #ffcf8f);
+    }
+
+    .envelope .ribbon-v {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      width: 26px;
+      transform: translateX(-50%);
+      background: linear-gradient(180deg, #f4b183, #ffcf8f);
+    }
+
+    .bow {
+      z-index: 2;
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Card */
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--card-border);
+      border-radius: 22px;
+      box-shadow: 0 8px 30px rgba(200, 80, 140, 0.12);
+    }
+
+    /* Floating Animation */
+    .floaty {
+      position: absolute;
+      opacity: 0.75;
+      animation: float 6s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(0); }
+      50% { transform: translateY(-16px) rotate(8deg); }
+    }
+
+    /* Candle Animation */
+    .flame {
+      width: 12px;
+      height: 22px;
+      margin: 0 auto;
+      border-radius: 50% 50% 20% 20%;
+      background: linear-gradient(to bottom, #fff3b0, #ffab5e, #ff6b6b);
+      box-shadow: 0 0 12px #ffab5e, 0 0 24px #fff3b0;
+      transform-origin: bottom center;
+      animation: flicker 0.18s infinite alternate;
+    }
+
+    @keyframes flicker {
+      0% { transform: scale(1) rotate(-3deg); }
+      100% { transform: scale(1.12) rotate(3deg); }
+    }
+
+    .flame.off {
+      opacity: 0;
+      transform: scale(0);
+      transition: all 0.4s;
+    }
+
+    /* Flip Card */
+    .flip {
+      perspective: 1000px;
+      height: 170px;
+      cursor: pointer;
+    }
+
+    .flip-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transform-style: preserve-3d;
+    }
+
+    .flip.flipped .flip-inner {
+      transform: rotateY(180deg);
+    }
+
+    .flip-face {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      border-radius: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 14px;
+    }
+
+    .flip-back {
+      transform: rotateY(180deg);
+      color: #ffffff;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Buttons & Form Inputs */
+    .btn {
+      border: none;
+      border-radius: 999px;
+      padding: 13px 22px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      background: linear-gradient(90deg, #e91e63, #d97706);
+      color: #ffffff;
+      box-shadow: 0 6px 20px rgba(216, 27, 96, 0.35);
+      transition: transform 0.2s;
+    }
+
+    .btn:active {
+      transform: scale(0.95);
+    }
+
+    .btn-outline {
+      background: #ffffff;
+      color: var(--pink-5);
+      border: 1.5px solid var(--pink-3);
+      box-shadow: none;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 11px 14px;
+      border-radius: 14px;
+      border: 1.5px solid var(--pink-3);
+      font-family: inherit;
+      font-size: 13px;
+      background: #ff6c9d;
+      color: var(--ink);
+    }
+
+    input::placeholder, textarea::placeholder {
+      color: var(--ink-muted);
+    }
+
+    input:focus, textarea:focus {
+      outline: 2px solid var(--pink-5);
+    }
+
+    @keyframes popIn {
+      0% { opacity: 0; transform: translateY(14px) scale(0.96); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    section {
+      padding-top: 44px;
+    }
+
+    h2.title {
+      font-size: 26px;
+      text-align: center;
+      margin: 0 0 4px;
+      color: var(--ink);
+    }
+
+    .eyebrow {
+      display: block;
+      text-align: center;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--pink-5);
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      transform: translate(-50%, 120%);
+      background: #2a1520;
+      color: #ffffff;
+      padding: 12px 20px;
+      border-radius: 14px;
+      font-size: 13px;
+      z-index: 60;
+      transition: transform 0.4s;
+      max-width: 88%;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    .toast.show {
+      transform: translate(-50%, 0);
+    }
+  </style>
+</head>
+<body>
+  <canvas id="sparkles"></canvas>
+
+  <!-- OVERLAY -->
+  <div id="overlay">
+    <div style="text-align:center;max-width:340px;">
+      <span style="display:inline-block;padding:5px 14px;border:1px solid rgba(255,182,209,.5);border-radius:999px;
+        color:#ffd9e8;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:600;">✨ Surat Spesial</span>
+      <!-- Teks judul dibuat putih agar kontras dengan latar overlay yang gelap -->
+      <h1 class="serif" style="font-size:30px;line-height:1.25;margin:12px 0 6px;color:#ffffff;">Untukmu yang Berulang Tahun ke-18</h1>
+      <p style="color:#ffe3ee;font-size:13.5px;margin-bottom:16px;">Ada kejutan manis menantimu di dalam kado ini.</p>
+      <div class="envelope" onclick="bukaKado()">
+        <div class="ribbon-h"></div>
+        <div class="ribbon-v"></div>
+        <div class="bow">🎁</div>
+      </div>
+      <button class="btn" style="margin-top:26px" onclick="bukaKado()">Buka Kejutannya 💌</button>
+    </div>
+  </div>
+
+  <!-- HEADER -->
+  <header style="position:sticky;top:0;z-index:30;backdrop-filter:blur(10px);background:rgba(255,255,255,0.75);
+    display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-bottom:1px solid rgba(255,182,209,0.3);">
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--pink-4),var(--gold));
+        color:#ffffff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;">18</span>
+      <span class="serif" style="font-weight:700;font-size:14px;color:#FF6C9D;">Sweet Eighteen</span>
+    </div>
+    <button id="musicBtn" class="btn-outline" style="padding:7px 14px;font-size:11px;border-radius:999px;display:flex;gap:6px;align-items:center;" onclick="toggleMusic()">
+      🎵 <span id="musicLabel">Putar Melodi</span>
+    </button>
+  </header>
+
+  <main class="wrap">
+    <!-- HERO -->
+    <section id="hero" style="text-align:center;position:relative;">
+      <span class="floaty" style="top:6px;left:4px;font-size:22px;">🎀</span>
+      <span class="floaty" style="top:40px;right:0;font-size:18px;animation-delay:1s;">💗</span>
+      <span class="eyebrow" style="margin-top:18px;">Hari Ini Adalah Hari Spesial</span>
+      <h1 class="serif" style="font-size:30px;line-height:1.25;margin:0 0 6px;color:#FF6C9D;">Selamat Ulang Tahun ke-18,</h1>
+      <div id="namaTampil" onclick="gantiNama()" class="cursive" style="font-size:44px;color:#cab600;cursor:pointer;font-weight:700;">
+        Sahabat Terbaik ✨
+      </div>
+      <p style="font-size:12px;color:#FF6C9D;margin-top:2px;font-weight:500;">Kinanty Rizky Ramadhan</p>
+      <p style="font-size:14px;line-height:1.6;max-width:380px;margin:14px auto 20px;color:#FF6C9D;">
+        Delapan belas tahun penuh cerita, tawa, dan kehangatan. Hari ini adalah gerbang menuju babak baru yang penuh keberanian dan mimpi besar. Selamat Ulang Tahun! 🎉
+      </p>
+
+      <button class="btn" id="ucapanBtn" onclick="bukaUcapan()" style="font-size:14.5px;padding:15px 26px;">
+        💌 Lihat Ucapan Untukmu
+      </button>
+
+      <div id="ucapanCard" class="card" style="padding:22px 20px;margin-top:16px;display:none;text-align:left;position:relative;overflow:hidden;">
+        <span style="position:absolute;top:-10px;right:-10px;font-size:70px;opacity:.12;user-select:none;">💗</span>
+        <div style="font-size:11px;font-weight:700;color:var(--pink-5);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;">
+          💌 Ucapan Dariku
+        </div>
+        <p style="font-size:14px;line-height:1.7;position:relative;z-index:1;color:var(--ink);">
+          Happy Birthday To You KINANTI RIZKY RAMADHAN
+
+          <p>Semoga sehat selalu, panjang umur dan lancar rejekinya ya. Jaga kesehatan ya kinan, gua pengen liat lu sehat terus, jangan sampe masuk rumah itu, apalagi sampe nginep. Beribu ribu makasih gua ucapkan ke lu karena udah mau jadi teman perempuan yg terbaik bagi gua. Jangan bosen - bosen untuk denger yapping gua ya.</p>
+
+          <p>Btw skrg lu udah ngerasain kerja kantoran ya? Semoga nanti bisa menjadi cewe kantoran yang gajinya 2 digit ya. Semoga lu dan gua bisa masuk PTN yang di inginkan ya.</p>
+
+
+          <p>Sehat selalu kinannn</p>
+          <p>HAPPY BIRTHDAY yang ke 18 ya!!</p>
+        </p>
+        <p style="text-align:right;font-size:12.5px;margin-top:12px;color:var(--ink-muted);font-style:italic;font-weight:500;">— By: Ridho ✨</p>
+      </div>
+    </section>
+
+    <!-- CANDLE -->
+    <section id="lilin" style="text-align:center;">
+      <span class="eyebrow">Ritual Kecil</span>
+      <h2 class="title serif" style="color:#FF6C9D;">Make a Wish 🕯️</h2>
+      <p style="font-size:13.5px;color:#FF6C9D;margin-bottom:18px;">Pejamkan mata, ucapkan doa terbaikmu, lalu tiup lilinnya.</p>
+      <div class="card" style="padding:26px 18px;">
+        <div style="width:80px;height:56px;margin:0 auto 4px;border-radius:8px 8px 20px 20px;
+          background:linear-gradient(180deg,#ffd6e8,#ff9dc2);position:relative;">
+          <div style="position:absolute;top:-14px;left:50%;transform:translateX(-50%);width:4px;height:16px;background:#e2b98f;"></div>
+          <div id="flame" class="flame" style="position:absolute;top:-34px;left:50%;transform:translateX(-50%);"></div>
+        </div>
+        <p id="lilinStatus" style="font-size:13px;margin:16px 0;color:white;font-weight:600;">Lilin masih menyala, tekan untuk meniup ✨</p>
+        <button class="btn" id="tiupBtn" onclick="tiupLilin()">Tiup Lilinnya 🌬️</button>
+      </div>
+    </section>
+
+    <!-- MOTIVATION -->
+    <section id="motivasi">
+      <span class="eyebrow">Ada Kata Motivasi Untukmu</span>
+      <h2 class="title serif" style="color:#FF6C9D">Kata-Kata untuk Chapter 18</h2>
+      <p style="text-align:center;font-size:13px;color:#FF6C9D;margin-bottom:18px;">Ketuk setiap kartu untuk membuka pesannya 💌</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;" id="motivGrid"></div>
+    </section>
+
+    <!-- WISH WALL -->
+    <section id="ucapan">
+      <span class="eyebrow">Dari Hati untuk Hatimu</span>
+      <h2 class="title serif" style="color:#FF6C9D;">Dinding Doa & Harapan</h2>
+      <p style="text-align:center;font-size:13px;color:var(--ink-muted);margin-bottom:18px;">Tulis ucapan manismu di sini ✍️</p>
+      <div class="card" style="padding:18px;margin-bottom:18px;">
+        <form id="wishForm" onsubmit="tambahUcapan(event)" style="display:flex;flex-direction:column;gap:10px;color:#FF6C9D">
+          <input id="wishNama" placeholder="Nama kamu" required>
+          <textarea id="wishPesan" rows="3" placeholder="Tulis doa atau ucapan terbaikmu..." required></textarea>
+          <button class="btn" type="submit">Kirim Ucapan 💗</button>
+        </form>
+      </div>
+      <div id="wishList" style="display:flex;flex-direction:column;gap:10px;"></div>
+    </section>
+
+    <!-- MOTTO -->
+    <section id="motto">
+      <div class="card" style="padding:26px 18px;text-align:center;">
+        <div style="font-size:28px;">🥂</div>
+        <h3 class="serif" style="font-size:19px;margin:8px 0 4px;color:var(--ink);">Motto Babak 18</h3>
+        <p id="mottoText" class="serif" style="font-style:italic;color:var(--pink-5);font-size:15px;font-weight:600;min-height:60px;
+          display:flex;align-items:center;justify-content:center;padding:0 6px;transition:opacity .3s;">
+          "Usia 18 adalah tentang melangkah berani dan mencintai diri sepenuh hati."
+        </p>
+        <button class="btn-outline btn" onclick="acakMotto()">🎲 Acak Motto Lain</button>
+      </div>
+    </section>
+
+    <footer style="text-align:center;padding-top:40px;font-size:12px;color:var(--ink-muted);">
+      <p class="serif" style="font-style:italic;font-size:13.5px;color:#cab600;">"18 bukan akhir masa muda, tapi awal petualangan terbaikmu."</p>
+      <div style="display:flex;gap:10px;justify-content:center;margin-top:14px;">
+        <button class="btn-outline btn" style="padding:9px 16px;font-size:12px;" onclick="salinLink()">🔗 <span id="copyLabel">Salin Tautan</span></button>
+        <button class="btn-outline btn" style="padding:9px 16px;font-size:12px;" onclick="bagikan()">📤 Bagikan</button>
+      </div>
+      <p style="margin-top:18px;color:#FF6C9D;">Dibuat dengan ❤️ untuk merayakan Sweet 18th-mu</p>
+    </footer>
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // Canvas Background Sparkles
+    const cv = document.getElementById('sparkles');
+    const ctx = cv.getContext('2d');
+    
+    function resize() {
+      cv.width = window.innerWidth;
+      cv.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    let sparks = Array.from({ length: 38 }, () => ({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      r: Math.random() * 1.8 + 0.4,
+      s: Math.random() * 0.4 + 0.1,
+      o: Math.random()
+    }));
+
+    function loop() {
+      ctx.clearRect(0, 0, cv.width, cv.height);
+      sparks.forEach(p => {
+        p.y -= p.s;
+        if (p.y < -5) {
+          p.y = window.innerHeight + 5;
+          p.x = Math.random() * window.innerWidth;
+        }
+        p.o += 0.02;
+        const op = Math.abs(Math.sin(p.o));
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(216, 27, 96, ${op * 0.7})`;
+        ctx.fill();
+      });
+      requestAnimationFrame(loop);
+    }
+    loop();
+
+    function toast(msg) {
+      const t = document.getElementById('toast');
+      t.innerText = msg;
+      t.classList.add('show');
+      clearTimeout(window._tt);
+      window._tt = setTimeout(() => t.classList.remove('show'), 2600);
+    }
+
+    function bukaKado() {
+      if (window.confetti) {
+        confetti({
+          particleCount: 110,
+          spread: 80,
+          origin: { y: 0.6 },
+          colors: ['#ff8fb3', '#f4b183', '#c99bf0', '#fff0f5']
+        });
+      }
+      const ov = document.getElementById('overlay');
+      ov.style.opacity = '0';
+      ov.style.pointerEvents = 'none';
+      setTimeout(() => { ov.style.display = 'none'; }, 700);
+    }
+
+    function gantiNama() {
+      const el = document.getElementById('namaTampil');
+      const lama = el.innerText.replace('✨', '').trim();
+      const baru = prompt('Masukkan nama panggilan spesial:', lama);
+      if (baru && baru.trim()) {
+        el.innerText = baru.trim() + ' ✨';
+        toast('Nama berhasil diperbarui ✨');
+      }
+    }
+
+    function bukaUcapan() {
+      const card = document.getElementById('ucapanCard');
+      const sudahTerbuka = card.style.display === 'block';
+      if (sudahTerbuka) {
+        card.style.display = 'none';
+        return;
+      }
+      card.style.display = 'block';
+      card.style.animation = 'none';
+      card.offsetHeight; // Reflow trigger
+      card.style.animation = 'popIn .5s ease';
+      if (window.confetti) {
+        confetti({
+          particleCount: 70,
+          spread: 60,
+          origin: { y: 0.5 },
+          colors: ['#ff8fb3', '#f4b183', '#c99bf0']
+        });
+      }
+      playHappyBirthday();
+      toast('Ucapan spesial untukmu telah terbuka 💗');
+    }
+
+    // Tone.js Audio Management
+    let synth = null;
+    let isPlaying = false;
+    let interval = null;
+    let activeTimeouts = [];
+
+    function clearAudioTimeouts() {
+      activeTimeouts.forEach(t => clearTimeout(t));
+      activeTimeouts = [];
+    }
+
+    const laguUlangTahun = [
+      { n: "G4", d: 0.28 }, { n: "G4", d: 0.28 }, { n: "A4", d: 0.55 }, { n: "G4", d: 0.55 }, { n: "C5", d: 0.55 }, { n: "B4", d: 1.05 },
+      { n: "G4", d: 0.28 }, { n: "G4", d: 0.28 }, { n: "A4", d: 0.55 }, { n: "G4", d: 0.55 }, { n: "D5", d: 0.55 }, { n: "C5", d: 1.05 },
+      { n: "G4", d: 0.28 }, { n: "G4", d: 0.28 }, { n: "G5", d: 0.55 }, { n: "E5", d: 0.55 }, { n: "C5", d: 0.55 }, { n: "B4", d: 0.55 }, { n: "A4", d: 1.05 },
+      { n: "F5", d: 0.28 }, { n: "F5", d: 0.28 }, { n: "E5", d: 0.55 }, { n: "C5", d: 0.55 }, { n: "D5", d: 0.55 }, { n: "C5", d: 1.05 }
+    ];
+
+    async function initSynth() {
+      if (window.Tone) {
+        await Tone.start();
+        if (!synth) {
+          synth = new Tone.PolySynth(Tone.Synth, { volume: -8 }).toDestination();
+        }
+      }
+    }
+
+    async function playHappyBirthday() {
+      try {
+        await initSynth();
+        if (!synth) return;
+        
+        if (interval) {
+          clearInterval(interval);
+          interval = null;
+          isPlaying = false;
+          document.getElementById('musicLabel').innerText = 'Putar Melodi';
+        }
+        
+        clearAudioTimeouts();
+        let timeOffset = 0;
+        laguUlangTahun.forEach(note => {
+          const timer = setTimeout(() => {
+            synth.triggerAttackRelease(note.n, note.d * 0.9);
+          }, timeOffset * 1000);
+          activeTimeouts.push(timer);
+          timeOffset += note.d;
+        });
+      } catch (e) {
+        console.error('Audio play error:', e);
+      }
+    }
+
+    async function toggleMusic() {
+      try {
+        await initSynth();
+        if (!synth) return;
+
+        isPlaying = !isPlaying;
+        const label = document.getElementById('musicLabel');
+        if (isPlaying) {
+          clearAudioTimeouts();
+          label.innerText = 'Melodi Aktif';
+          const notes = ['C5', 'E5', 'G5', 'C6', 'A4', 'F5'];
+          interval = setInterval(() => {
+            synth.triggerAttackRelease(notes[Math.floor(Math.random() * notes.length)], '8n');
+          }, 900);
+          toast('Melodi kotak musik diaktifkan 🎵');
+        } else {
+          label.innerText = 'Putar Melodi';
+          if (interval) clearInterval(interval);
+        }
+      } catch (e) {
+        console.error('Toggle music error:', e);
+      }
+    }
+
+    function playChord() {
+      if (window.Tone) {
+        Tone.start().then(() => {
+          if (!synth) synth = new Tone.PolySynth(Tone.Synth, { volume: -10 }).toDestination();
+          synth.triggerAttackRelease(['C5', 'E5', 'G5', 'C6'], '4n');
+        }).catch(() => {});
+      }
+    }
+
+    function tiupLilin() {
+      document.getElementById('flame').classList.add('off');
+      document.getElementById('lilinStatus').innerHTML = '🎉 Lilin berhasil ditiup! Doamu telah terkirim ke semesta.';
+      const btn = document.getElementById('tiupBtn');
+      btn.innerText = 'Sudah Ditiup 🌟';
+      btn.disabled = true;
+      btn.style.opacity = '0.6';
+      if (window.confetti) {
+        confetti({
+          particleCount: 90,
+          spread: 65,
+          origin: { y: 0.5 },
+          colors: ['#f4b183', '#ff8fb3', '#c99bf0']
+        });
+      }
+      playChord();
+      toast('Selamat Ulang Tahun ke-18! 🥳✨');
+    }
+
+    // Kapsul Motivasi (Warna gradien diperdalam agar teks putih kontras & terang)
+    const kapsul = [
+      { icon: '🌱', judul: 'Berani Bertumbuh', pesan: 'Jangan takut melangkah keluar dari zona nyaman. Setiap langkah kecilmu hari ini adalah fondasi masa depanmu.', c1: '#d81b60', c2: '#8e0a3b' },
+      { icon: '💫', judul: 'Percaya Diri', pesan: 'Kamu lebih kuat dan lebih berharga dari yang kamu kira. Percayalah pada suara hati dan kemampuanmu sendiri.', c1: '#7c3aed', c2: '#5b21b6' },
+      { icon: '💖', judul: 'Cinta Diri', pesan: 'Rawat dirimu sebaik kamu merawat orang lain. Kamu pantas mendapatkan kebahagiaan yang kamu perjuangkan.', c1: '#d97706', c2: '#b45309' },
+      { icon: '🛡️', judul: 'Tetap Tangguh', pesan: 'Tantangan di usia dewasa bukan halangan, tapi batu pijakan menuju pribadi yang lebih bijaksana.', c1: '#be123c', c2: '#881337' },
+      { icon: '😊', judul: 'Jaga Senyuman', pesan: 'Jangan pernah kehilangan binar di matamu. Syukuri setiap momen sederhana dalam hidupmu.', c1: '#0d9488', c2: '#115e59' },
+      { icon: '👑', judul: 'Bersinarlah', pesan: 'Kamu punya kilau yang tak dimiliki orang lain. Potensimu akan membuka banyak jalan kesuksesan.', c1: '#2563eb', c2: '#1e40af' },
+    ];
+
+    const grid = document.getElementById('motivGrid');
+    kapsul.forEach((k) => {
+      const d = document.createElement('div');
+      d.className = 'flip';
+      d.onclick = () => d.classList.toggle('flipped');
+      d.innerHTML = `
+        <div class="flip-inner">
+          <div class="flip-face card" style="border:1px solid rgba(255,180,210,.6);">
+            <div style="font-size:26px;">${k.icon}</div>
+            <div style="font-weight:700;font-size:13px;margin-top:6px;color:var(--ink);">${k.judul}</div>
+            <div style="font-size:11px;color:var(--ink-muted);margin-top:4px;">Ketuk untuk buka</div>
+          </div>
+          <div class="flip-face flip-back" style="background:linear-gradient(135deg,${k.c1},${k.c2});">
+            <div style="font-size:12px;line-height:1.5;font-weight:500;">${k.pesan}</div>
+          </div>
+        </div>`;
+      grid.appendChild(d);
+    });
+
+    // Dinding Doa
+    let wishes = [
+      { nama: 'Sahabat Terbaik', pesan: 'Semoga usia 18-mu membawa banyak kebahagiaan dan keberanian mengejar mimpi besarmu!' },
+      { nama: 'Kakak Tersayang', pesan: 'Selamat datang di usia dewasa! Tetaplah menjadi sosok yang baik hati dan jujur pada dirimu sendiri.' },
+    ];
+
+    function renderWish() {
+      const box = document.getElementById('wishList');
+      box.innerHTML = '';
+      wishes.slice().reverse().forEach(w => {
+        const el = document.createElement('div');
+        el.className = 'card';
+        el.style.padding = '14px 16px';
+        el.innerHTML = `
+          <div style="font-weight:700;font-size:13px;color:var(--pink-5);">💌 ${w.nama}</div>
+          <div style="font-size:13px;margin-top:4px;line-height:1.5;color:var(--ink);">"${w.pesan}"</div>`;
+        box.appendChild(el);
+      });
+    }
+
+    function tambahUcapan(e) {
+      e.preventDefault();
+      const nama = document.getElementById('wishNama').value.trim();
+      const pesan = document.getElementById('wishPesan').value.trim();
+      if (nama && pesan) {
+        wishes.push({ nama, pesan });
+        renderWish();
+        document.getElementById('wishForm').reset();
+        if (window.confetti) confetti({ particleCount: 35, spread: 55, origin: { y: 0.8 } });
+        toast('Ucapanmu berhasil disematkan ✨');
+      }
+    }
+    renderWish();
+
+    // Array Motto
+    const daftarMotto = [
+      '"Usia 18 adalah tentang melangkah berani dan mencintai diri sepenuh hati."',
+      '"Menjadi dewasa berarti percaya pada kemampuanmu menciptakan kebahagiaanmu sendiri."',
+      '"Chapter 18: lebih banyak tawa, keberanian tanpa batas, dan pencapaian hebat."',
+      '"Percayalah pada prosesmu, kamu punya semua yang dibutuhkan untuk meraih mimpi besar."',
+      '"Tetaplah hangat, anggun, dan jangan pernah berhenti bersinar."'
+    ];
+
+    function acakMotto() {
+      const el = document.getElementById('mottoText');
+      el.style.opacity = 0;
+      setTimeout(() => {
+        el.innerText = daftarMotto[Math.floor(Math.random() * daftarMotto.length)];
+        el.style.opacity = 1;
+      }, 250);
+    }
+
+    // Fitur Salin & Bagikan
+    function salinLink() {
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(location.href).catch(() => {});
+      }
+      document.getElementById('copyLabel').innerText = 'Tersalin!';
+      setTimeout(() => {
+        document.getElementById('copyLabel').innerText = 'Salin Tautan';
+      }, 2000);
+      toast('Tautan berhasil disalin 📋');
+    }
+
+    function bagikan() {
+      if (navigator.share) {
+        navigator.share({
+          title: 'Selamat Ulang Tahun ke-18!',
+          text: 'Yuk rayakan ulang tahun ke-18 sahabat kita!',
+          url: location.href
+        }).catch(() => {});
+      } else {
+        salinLink();
+      }
+    }
+  </script>
+</body>
+</html>
